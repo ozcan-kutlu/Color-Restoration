@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
+/** Vercel: renklendirme + ağ gecikmesi için (planınıza göre üst sınır değişir). */
+export const maxDuration = 60;
+
 const DEFAULT_BACKEND = "http://127.0.0.1:8000";
 
 function backendBaseUrl(): string {

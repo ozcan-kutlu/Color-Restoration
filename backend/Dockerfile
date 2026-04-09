@@ -26,7 +26,8 @@ USER appuser
 
 EXPOSE 8000
 
+# PORT: Render ve benzeri platformlar çalışma zamanında atar; yoksa 8000 (ör. docker compose).
 HEALTHCHECK --interval=30s --timeout=10s --start-period=180s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health', timeout=5)"
+    CMD python -c "import os,urllib.request as u; p=os.environ.get('PORT','8000'); u.urlopen('http://127.0.0.1:'+p+'/api/v1/health', timeout=5)"
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

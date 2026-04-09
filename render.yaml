@@ -1,0 +1,22 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+# Dashboard → New → Blueprint → Bu dosyayı bağla veya repo köküne commit'le otomatik algılat.
+#
+# Model dosyası imajda yoktur (backend/.dockerignore). Seçenekler:
+# - Persistent Disk ekle: mountPath örn. /data, CR_MODEL_PATH=/data/colorization.keras
+# - veya özel imajda models/*.keras dahil edecek şekilde .dockerignore'u CI'da gevşet.
+
+services:
+  - type: web
+    name: color-restoration-api
+    runtime: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: CR_ENVIRONMENT
+        value: prod
+      - key: CR_MODEL_PATH
+        value: models/colorization.keras
+      # Vercel URL’inizi buraya yazın (Swagger / doğrudan fetch için):
+      # - key: CR_CORS_ORIGINS
+      #   value: https://your-app.vercel.app

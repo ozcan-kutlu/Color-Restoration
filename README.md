@@ -10,6 +10,7 @@ Siyah-beyaz veya soluk görselleri renklendirmek için bir uygulama: **Next.js**
 - REST API (`/api/v1/images/colorize`) ve Swagger dokümantasyonu (`/docs`)
 - Docker Compose ile tek komutta backend + frontend çalıştırma
 - Yerel geliştirme için ayrı backend ve frontend sunucuları
+- `render.yaml` ve `frontend/vercel.json` ile Render / Vercel yayınına uyum
 
 ---
 
@@ -138,6 +139,7 @@ python backend/train/train_baseline.py --train-dir data/processed/train --val-di
 | `CR_MODEL_PATH` | Keras model dosyası (varsayılan: `models/colorization.keras`) |
 | `CR_INFERENCE_IMAGE_SIZE` | Çıkarım için görüntü boyutu |
 | `CR_ENVIRONMENT` | Örn. `dev` / `prod` |
+| `CR_CORS_ORIGINS` | İsteğe bağlı; virgülle ayrılmış `https://...` listesi (boşsa CORS middleware yok) |
 
 ---
 
@@ -187,6 +189,29 @@ docker build -t color-restoration-web ./frontend
 ```
 
 Compose içinde frontend, ağ üzerinden `COLOR_RESTORATION_API_URL=http://backend:8000` kullanır.
+
+---
+
+## Yayınlama (Render + Vercel)
+
+### Akış
+
+1. **Render:** API’yi deploy et, public URL’i not al (örn. `https://color-restoration-api.onrender.com`).
+2. **Vercel:** GitHub repo’sunu import et; **Root Directory** olarak `frontend` seç.
+3. **Vercel → Settings → Environment Variables:** `COLOR_RESTORATION_API_URL` = Render’daki API tabanı (**sonda `/` olmadan**). Production (ve gerekirse Preview) için tanımla.
+4. **İsteğe bağlı — CORS:** Arayüz sunucu üzerinden `/api/colorize` ile proxy yaptığı için tarayıcı doğrudan Render’a gitmez; yine de Swagger veya başka bir origin’den API’ye erişeceksen Render’da `CR_CORS_ORIGINS` ekle (örn. `https://proje-adin.vercel.app`).
+
+### Render (backend)
+
+- Repo kökündeki [`render.yaml`](render.yaml) ile [Blueprint](https://render.com/docs/blueprint-spec) oluşturabilir veya manuel **Web Service → Docker** ekleyebilirsin: **Dockerfile** `backend/Dockerfile`, **Docker build context** `backend`.
+- **Sağlık kontrolü yolu:** `/api/v1/health`
+- **Model:** `backend/.dockerignore` varsayılan olarak `models/*.keras` dosyalarını imaja almaz. Seçenekler: [Persistent Disk](https://render.com/docs/disks) ekleyip modeli disk üzerine koyup `CR_MODEL_PATH` ile mutlak yolu vermek; veya güvenilir bir pipeline’da `.dockerignore` kuralını gevşetip modeli imaja dahil etmek.
+- Platform **`PORT`** ortam değişkenini verir; Docker imajı buna uyumludur.
+
+### Vercel (frontend)
+
+- Proje dizini **`frontend/`** olmalı; kökteki `vercel.json` Next.js için `app/api/colorize/route.ts` rotasına **`maxDuration`: 60** saniye verir (Vercel planına göre üst sınır farklı olabilir; ağır isteklerde Pro veya daha yüksek limit gerekebilir).
+- Örnek ortam değişkeni: `frontend/.env.example`.
 
 ---
 
