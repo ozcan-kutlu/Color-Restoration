@@ -211,7 +211,7 @@ Compose içinde frontend, ağ üzerinden `COLOR_RESTORATION_API_URL=http://backe
 
 Repoda `colorization.keras` yok (`.gitignore`); konteyner ilk çalıştığında dosya gerekir. İki yol:
 
-1. **Önerilen (ücretsiz Render):** Render → servisin **Environment** sekmesi → **`CR_MODEL_DOWNLOAD_URL`** ekle: `.keras` dosyasına giden **doğrudan HTTPS** adresi (tarayıcıda açınca indirme başlamalı). Örnek: GitHub’da **Release** oluşturup dosyayı asset olarak yüklemek; asset’in **“Download”** linkini kopyala. Google Drive “paylaş” linkleri çoğunlukla doğrudan dosya vermez.
+1. **Önerilen (ücretsiz Render + GitHub Release):** Release çoğu zaman **`.keras` dosyasını asset olarak kabul etmez**. Çözüm: `colorization.keras` dosyasını bir **ZIP** içine koy (ör. `colorization.zip` — içinde tek dosya `colorization.keras` olsun). Release’a **`.zip`** yükle; **Download** linkini kopyala. Render’da **`CR_MODEL_DOWNLOAD_URL`** = bu `.zip` URL’si (adres yolu `.zip` ile bitsin). Konteyner ZIP’i indirip içinden `.keras`’ı çıkarır. URL `.zip` ile bitmiyorsa ama dosya yine de zip ise ortam değişkeni **`CR_MODEL_DOWNLOAD_AS_ZIP=1`** ekle. Alternatif: `.keras` veya `.h5` dosyasını doğrudan veren başka bir **public HTTPS** (S3, R2, vb.). Google Drive “paylaş” linkleri çoğunlukla uygun olmaz.
 2. **İmajın içine göm:** `backend/models/colorization.keras` dosyasını build sırasında context’te bulundur (ör. CI’da önce dosyayı kopyala, sonra `docker build`). Yerel `docker build` öncesi aynı yola modeli koyman yeterli; entrypoint dosyayı görünce indirme yapmaz.
 
 `CR_MODEL_PATH` varsayılan `models/colorization.keras` (değiştirmesen yeter).

@@ -2,8 +2,9 @@
 # Dashboard → New → Blueprint → Repoyu bağla.
 #
 # plan: free — uyku: ~15 dk hareketsizlik; ilk istek yavaş olabilir.
-# Model: repoda .keras yoksa ZORUNLU — Dashboard → Environment → CR_MODEL_DOWNLOAD_URL
-# (ör. GitHub Release asset’inin doğrudan indirme linki, public S3/R2 URL). Google Drive “paylaş” linki çoğunlukla işe yaramaz.
+# Model: repoda .keras yoksa ZORUNLU — CR_MODEL_DOWNLOAD_URL
+# GitHub Release .keras kabul etmeyebilir → modeli ZIP’le (içinde colorization.keras), .zip asset yükle; URL .zip ile bitsin.
+# Alternatif: doğrudan .keras / .h5 host eden public HTTPS (S3, R2, vb.).
 #
 # Private repo: Render’da `free` kısıtı olabilir.
 
@@ -20,9 +21,10 @@ services:
         value: prod
       - key: CR_MODEL_PATH
         value: models/colorization.keras
-      # Zorunlu (model repoda yok): gerçek URL’yi Render panelinden ekle.
+      # Zorunlu (model repoda yok): Release’taki .zip asset linki (veya ham .keras URL’si).
       # - key: CR_MODEL_DOWNLOAD_URL
-      #   value: https://github.com/.../releases/download/v1/colorization.keras
+      #   value: https://github.com/.../releases/download/v1/colorization.zip
+      # URL .zip değilse ama dosya zip ise: CR_MODEL_DOWNLOAD_AS_ZIP=1
       # Vercel URL’inizi buraya yazın (Swagger / doğrudan fetch için):
       # - key: CR_CORS_ORIGINS
       #   value: https://your-app.vercel.app
