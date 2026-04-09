@@ -19,8 +19,8 @@ htmlcov/
 # Data & artifacts (büyük dosyalar)
 data/raw/
 data/processed/
-backend/models/*.keras
-backend/models/*.h5
+# Model: colorization.keras repoda tutulabilir (Render imajına COPY ile girer; CR_MODEL_DOWNLOAD_URL gerekmez).
+# GitHub tek dosyada ~100 MB üzerini genelde reddeder — daha büyükse Git LFS veya indirme URL’si kullan.
 backend/scripts/sample_*.png
 
 # Node / Next

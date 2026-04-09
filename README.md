@@ -209,10 +209,11 @@ Compose içinde frontend, ağ üzerinden `COLOR_RESTORATION_API_URL=http://backe
 
 #### Model dosyası (en önemli adım)
 
-Repoda `colorization.keras` yok (`.gitignore`); konteyner ilk çalıştığında dosya gerekir. İki yol:
+Docker imajı `backend/models/` klasörünü kopyalar. Dosya yoksa veya boşsa konteyner **`CR_MODEL_DOWNLOAD_URL`** ile indirmeyi dener.
 
-1. **Önerilen (ücretsiz Render + GitHub Release):** Release çoğu zaman **`.keras` dosyasını asset olarak kabul etmez**. Çözüm: `colorization.keras` dosyasını bir **ZIP** içine koy (ör. `colorization.zip` — içinde tek dosya `colorization.keras` olsun). Release’a **`.zip`** yükle; **Download** linkini kopyala. Render’da **`CR_MODEL_DOWNLOAD_URL`** = bu `.zip` URL’si (adres yolu `.zip` ile bitsin). Konteyner ZIP’i indirip içinden `.keras`’ı çıkarır. URL `.zip` ile bitmiyorsa ama dosya yine de zip ise ortam değişkeni **`CR_MODEL_DOWNLOAD_AS_ZIP=1`** ekle. Alternatif: `.keras` veya `.h5` dosyasını doğrudan veren başka bir **public HTTPS** (S3, R2, vb.). Google Drive “paylaş” linkleri çoğunlukla uygun olmaz.
-2. **İmajın içine göm:** `backend/models/colorization.keras` dosyasını build sırasında context’te bulundur (ör. CI’da önce dosyayı kopyala, sonra `docker build`). Yerel `docker build` öncesi aynı yola modeli koyman yeterli; entrypoint dosyayı görünce indirme yapmaz.
+1. **En basit yol — model repoda (küçük dosyalar):** `colorization.keras` dosyasını **`backend/models/colorization.keras`** olarak koy, `git add` + `git push` yap. Render yeniden build edince model imajın içinde olur; **`CR_MODEL_DOWNLOAD_URL` tanımlama** (veya Render’dan sil). **Dikkat:** GitHub tek dosyada kabaca **100 MB üzerini** çoğu zaman reddeder; model daha büyükse bu yol işe yapmaz → [Git LFS](https://git-lfs.github.com/) veya aşağıdaki indirme yöntemi.
+2. **Büyük model — HTTPS indirme / ZIP:** Render’da **`CR_MODEL_DOWNLOAD_URL`** (doğrudan `.keras`, veya `.zip` içinde `.keras` — ayrıntı için `backend/.env.example` ve `render.yaml` yorumları).
+3. **Yerel Docker:** Aynı yola modeli koyman yeterli; `docker compose` ile volume veya imaj içi dosya kullanılır.
 
 `CR_MODEL_PATH` varsayılan `models/colorization.keras` (değiştirmesen yeter).
 
@@ -233,4 +234,4 @@ Repoda `colorization.keras` yok (`.gitignore`); konteyner ilk çalıştığında
 ## Notlar
 
 - Eğitim ve çıkarım ön-işlemesi uyumlu kalmalı (`train_baseline` ↔ `KerasColorizationAdapter`).
-- Büyük veri ve ağırlık dosyaları `.gitignore` ile repodan hariç tutulur; modeli kendin üret veya sağla.
+- Ham veri setleri `.gitignore` ile hariç; model `backend/models/colorization.keras` olarak commit edilebilir (GitHub boyut limitine dikkat).

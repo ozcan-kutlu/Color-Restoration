@@ -2,9 +2,8 @@
 # Dashboard → New → Blueprint → Repoyu bağla.
 #
 # plan: free — uyku: ~15 dk hareketsizlik; ilk istek yavaş olabilir.
-# Model: repoda .keras yoksa ZORUNLU — CR_MODEL_DOWNLOAD_URL
-# GitHub Release .keras kabul etmeyebilir → modeli ZIP’le (içinde colorization.keras), .zip asset yükle; URL .zip ile bitsin.
-# Alternatif: doğrudan .keras / .h5 host eden public HTTPS (S3, R2, vb.).
+# Model: backend/models/colorization.keras repoda ise (GitHub ~100 MB altı) CR_MODEL_DOWNLOAD_URL gerekmez.
+# Repoda yoksa: CR_MODEL_DOWNLOAD_URL (.keras, .zip içi .keras, veya public HTTPS).
 #
 # Private repo: Render’da `free` kısıtı olabilir.
 
