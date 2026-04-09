@@ -10,8 +10,10 @@ services:
     environment:
       CR_MODEL_PATH: models/colorization.keras
       CR_ENVIRONMENT: prod
+      # İsteğe bağlı: model klasörü boşsa HTTPS’ten indirir (Render ile aynı mantık).
+      # CR_MODEL_DOWNLOAD_URL: https://ornek.com/colorization.keras
     volumes:
-      - ./backend/models:/app/models:ro
+      - ./backend/models:/app/models
     # Sağlık kontrolü: backend/Dockerfile HEALTHCHECK
 
   frontend:

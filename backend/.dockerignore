@@ -9,6 +9,6 @@ __pycache__
 tests
 train
 scripts
-models/*.keras
-models/*.h5
+# models/*.keras ve *.h5: Yerel/CI build'de imaja dahil etmek için hariç tutulmaz.
+# Repoda genelde yalnızca .gitkeep vardır; Render'da çoğunlukla CR_MODEL_DOWNLOAD_URL kullanılır.
 *.md

@@ -1,12 +1,11 @@
 # Render Blueprint: https://render.com/docs/blueprint-spec
 # Dashboard → New → Blueprint → Repoyu bağla.
 #
-# plan: free — Ücretsiz web servisi (uyku: ~15 dk hareketsizlikten sonra; uyanınca ~1 dk sürebilir).
-# Free planda Persistent Disk yok; model dosyası imaja dahil edilmeli veya başlangıçta indirilmeli.
-# backend/.dockerignore içinde models/*.keras satırını kaldırıp modeli build context’e ekleyebilirsin
-# (model repoda olmamalıysa GitHub Actions + artifact veya gizli URL ile indirme kullan).
+# plan: free — uyku: ~15 dk hareketsizlik; ilk istek yavaş olabilir.
+# Model: repoda .keras yoksa ZORUNLU — Dashboard → Environment → CR_MODEL_DOWNLOAD_URL
+# (ör. GitHub Release asset’inin doğrudan indirme linki, public S3/R2 URL). Google Drive “paylaş” linki çoğunlukla işe yaramaz.
 #
-# Not: Render dokümantasyonuna göre `free` planı özel (private) repolar için kullanılamayabilir.
+# Private repo: Render’da `free` kısıtı olabilir.
 
 services:
   - type: web
@@ -21,6 +20,9 @@ services:
         value: prod
       - key: CR_MODEL_PATH
         value: models/colorization.keras
+      # Zorunlu (model repoda yok): gerçek URL’yi Render panelinden ekle.
+      # - key: CR_MODEL_DOWNLOAD_URL
+      #   value: https://github.com/.../releases/download/v1/colorization.keras
       # Vercel URL’inizi buraya yazın (Swagger / doğrudan fetch için):
       # - key: CR_CORS_ORIGINS
       #   value: https://your-app.vercel.app

@@ -205,7 +205,17 @@ Compose içinde frontend, ağ üzerinden `COLOR_RESTORATION_API_URL=http://backe
 
 - Repo kökündeki [`render.yaml`](render.yaml) ile [Blueprint](https://render.com/docs/blueprint-spec) oluşturabilir veya manuel **Web Service → Docker** ekleyebilirsin: **Dockerfile** `backend/Dockerfile`, **Docker build context** `backend`.
 - **Sağlık kontrolü yolu:** `/api/v1/health`
-- **Plan:** `render.yaml` içinde `plan: free` (ücretsiz; uyku ve aylık saat limiti vardır). Ücretli planda [Persistent Disk](https://render.com/docs/disks) ile model saklanabilir; **free’de disk yok** — modeli imaja dahil etmek (`.dockerignore`’da `models/*.keras` kuralını kaldırıp build’e dosyayı eklemek) veya deploy sırasında güvenilir bir URL’den indirmek gerekir.
+- **Plan:** `plan: free` (uyku / saat limiti; ücretli planda [Disk](https://render.com/docs/disks) ile model saklanabilir).
+
+#### Model dosyası (en önemli adım)
+
+Repoda `colorization.keras` yok (`.gitignore`); konteyner ilk çalıştığında dosya gerekir. İki yol:
+
+1. **Önerilen (ücretsiz Render):** Render → servisin **Environment** sekmesi → **`CR_MODEL_DOWNLOAD_URL`** ekle: `.keras` dosyasına giden **doğrudan HTTPS** adresi (tarayıcıda açınca indirme başlamalı). Örnek: GitHub’da **Release** oluşturup dosyayı asset olarak yüklemek; asset’in **“Download”** linkini kopyala. Google Drive “paylaş” linkleri çoğunlukla doğrudan dosya vermez.
+2. **İmajın içine göm:** `backend/models/colorization.keras` dosyasını build sırasında context’te bulundur (ör. CI’da önce dosyayı kopyala, sonra `docker build`). Yerel `docker build` öncesi aynı yola modeli koyman yeterli; entrypoint dosyayı görünce indirme yapmaz.
+
+`CR_MODEL_PATH` varsayılan `models/colorization.keras` (değiştirmesen yeter).
+
 - Platform **`PORT`** ortam değişkenini verir; Docker imajı buna uyumludur.
 
 ### Vercel (frontend)
