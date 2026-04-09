@@ -205,7 +205,7 @@ Compose içinde frontend, ağ üzerinden `COLOR_RESTORATION_API_URL=http://backe
 
 - Repo kökündeki [`render.yaml`](render.yaml) ile [Blueprint](https://render.com/docs/blueprint-spec) oluşturabilir veya manuel **Web Service → Docker** ekleyebilirsin: **Dockerfile** `backend/Dockerfile`, **Docker build context** `backend`.
 - **Sağlık kontrolü yolu:** `/api/v1/health`
-- **Model:** `backend/.dockerignore` varsayılan olarak `models/*.keras` dosyalarını imaja almaz. Seçenekler: [Persistent Disk](https://render.com/docs/disks) ekleyip modeli disk üzerine koyup `CR_MODEL_PATH` ile mutlak yolu vermek; veya güvenilir bir pipeline’da `.dockerignore` kuralını gevşetip modeli imaja dahil etmek.
+- **Plan:** `render.yaml` içinde `plan: free` (ücretsiz; uyku ve aylık saat limiti vardır). Ücretli planda [Persistent Disk](https://render.com/docs/disks) ile model saklanabilir; **free’de disk yok** — modeli imaja dahil etmek (`.dockerignore`’da `models/*.keras` kuralını kaldırıp build’e dosyayı eklemek) veya deploy sırasında güvenilir bir URL’den indirmek gerekir.
 - Platform **`PORT`** ortam değişkenini verir; Docker imajı buna uyumludur.
 
 ### Vercel (frontend)

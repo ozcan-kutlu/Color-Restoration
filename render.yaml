@@ -1,14 +1,18 @@
 # Render Blueprint: https://render.com/docs/blueprint-spec
-# Dashboard → New → Blueprint → Bu dosyayı bağla veya repo köküne commit'le otomatik algılat.
+# Dashboard → New → Blueprint → Repoyu bağla.
 #
-# Model dosyası imajda yoktur (backend/.dockerignore). Seçenekler:
-# - Persistent Disk ekle: mountPath örn. /data, CR_MODEL_PATH=/data/colorization.keras
-# - veya özel imajda models/*.keras dahil edecek şekilde .dockerignore'u CI'da gevşet.
+# plan: free — Ücretsiz web servisi (uyku: ~15 dk hareketsizlikten sonra; uyanınca ~1 dk sürebilir).
+# Free planda Persistent Disk yok; model dosyası imaja dahil edilmeli veya başlangıçta indirilmeli.
+# backend/.dockerignore içinde models/*.keras satırını kaldırıp modeli build context’e ekleyebilirsin
+# (model repoda olmamalıysa GitHub Actions + artifact veya gizli URL ile indirme kullan).
+#
+# Not: Render dokümantasyonuna göre `free` planı özel (private) repolar için kullanılamayabilir.
 
 services:
   - type: web
     name: color-restoration-api
     runtime: docker
+    plan: free
     dockerfilePath: backend/Dockerfile
     dockerContext: backend
     healthCheckPath: /api/v1/health
