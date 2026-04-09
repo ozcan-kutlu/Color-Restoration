@@ -1,0 +1,27 @@
+name: color-restoration
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      CR_MODEL_PATH: models/colorization.keras
+      CR_ENVIRONMENT: prod
+    volumes:
+      - ./backend/models:/app/models:ro
+    # Sağlık kontrolü: backend/Dockerfile HEALTHCHECK
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      COLOR_RESTORATION_API_URL: http://backend:8000
+    depends_on:
+      backend:
+        condition: service_healthy
