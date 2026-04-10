@@ -16,6 +16,7 @@ COPY pyproject.toml ./
 COPY app ./app/
 COPY docker ./docker/
 COPY models ./models/
+RUN sed -i 's/\r$//' /app/docker/entrypoint.sh
 
 RUN pip install --upgrade pip && pip install .
 
