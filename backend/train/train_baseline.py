@@ -99,6 +99,13 @@ def build_dataset_from_dir(
 
 
 def train(args: argparse.Namespace) -> None:
+    if args.mixed_precision:
+        try:
+            keras.mixed_precision.set_global_policy("mixed_float16")
+            print("Mixed precision enabled: mixed_float16")
+        except Exception as exc:
+            print(f"Mixed precision unavailable, fallback to float32: {exc}")
+
     train_dir = _resolve_path(args.train_dir, base=_REPO_ROOT)
     val_dir = _resolve_path(args.val_dir, base=_REPO_ROOT)
 
@@ -151,10 +158,26 @@ def parse_args() -> argparse.Namespace:
         default=str(_REPO_ROOT / "data" / "processed" / "val"),
         help="Doğrulama görselleri (göreli yol repo köküne göredir).",
     )
-    parser.add_argument("--epochs", type=int, default=15)
-    parser.add_argument("--batch-size", type=int, default=16)
-    parser.add_argument("--image-size", type=int, default=128)
+    parser.add_argument("--epochs", type=int, default=20)
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=8,
+        help="Yüksek çözünürlük için varsayılan batch-size düşürüldü (VRAM/RAM dostu).",
+    )
+    parser.add_argument(
+        "--image-size",
+        type=int,
+        default=256,
+        help="Eğitim giriş çözünürlüğü (öneri: 256+, bellek yeterliyse 384/512).",
+    )
     parser.add_argument("--learning-rate", type=float, default=3e-4)
+    parser.add_argument(
+        "--mixed-precision",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="GPU'da eğitim hız/bellek verimi için mixed precision kullan.",
+    )
     parser.add_argument(
         "--output-model-path",
         type=str,

@@ -117,8 +117,10 @@ python backend/scripts/prepare_dataset.py --source-dir data/raw --target-dir dat
 **Eğitim (varsayılan çıktı: `backend/models/colorization.keras`):**
 
 ```bash
-python backend/train/train_baseline.py --epochs 15 --batch-size 16 --image-size 128 --learning-rate 3e-4
+python backend/train/train_baseline.py --epochs 20 --batch-size 8 --image-size 256 --learning-rate 3e-4
 ```
+
+Yüksek kalite için `--image-size 384` veya `512` deneyebilirsin; bellek yetmezse `--batch-size` değerini `4` veya `2` yap.
 
 Özel klasörler:
 
