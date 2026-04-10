@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 export const maxDuration = 60;
 
 const DEFAULT_BACKEND = "http://127.0.0.1:8000";
+const MAX_UPLOAD_SIZE_MB = 8;
+const MAX_UPLOAD_SIZE_BYTES = MAX_UPLOAD_SIZE_MB * 1024 * 1024;
 
 function backendBaseUrl(): string {
   const url = process.env.COLOR_RESTORATION_API_URL?.trim();
@@ -26,6 +28,14 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: "Lütfen bir görsel dosyası yükleyin." },
       { status: 400 },
+    );
+  }
+  if (file.size > MAX_UPLOAD_SIZE_BYTES) {
+    return NextResponse.json(
+      {
+        error: `Dosya çok büyük. En fazla ${MAX_UPLOAD_SIZE_MB} MB yükleyebilirsiniz.`,
+      },
+      { status: 413 },
     );
   }
 
@@ -65,6 +75,15 @@ export async function POST(request: NextRequest) {
   }
 
   if (!upstream.ok) {
+    if (upstream.status === 413) {
+      return NextResponse.json(
+        {
+          error:
+            "Yüklenen görsel çok büyük. Daha düşük çözünürlükte veya sıkıştırılmış bir dosya deneyin.",
+        },
+        { status: 413 },
+      );
+    }
     let detail = `Sunucu hatası (${upstream.status}).`;
     try {
       const text = await upstream.text();

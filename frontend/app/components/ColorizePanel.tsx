@@ -6,6 +6,12 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 const ACCEPT = "image/png,image/jpeg,image/jpg,image/webp";
+const MAX_FILE_SIZE_MB = 8;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+
+function formatMb(sizeBytes: number): string {
+  return `${(sizeBytes / (1024 * 1024)).toFixed(1)} MB`;
+}
 
 function revokeIfNeeded(url: string | null) {
   if (url?.startsWith("blob:")) URL.revokeObjectURL(url);
@@ -55,6 +61,12 @@ export function ColorizePanel() {
       const f = list[0];
       if (!f.type.startsWith("image/")) {
         setError("Lütfen bir görsel dosyası seçin.");
+        return;
+      }
+      if (f.size > MAX_FILE_SIZE_BYTES) {
+        setError(
+          `Dosya çok büyük (${formatMb(f.size)}). En fazla ${MAX_FILE_SIZE_MB} MB yükleyebilirsiniz. Daha küçük bir görsel deneyin.`,
+        );
         return;
       }
       setChosenFile(f);
@@ -183,7 +195,8 @@ export function ColorizePanel() {
             Görseli sürükleyip bırakın veya seçin
           </span>
           <span className="max-w-sm text-sm text-zinc-500">
-            PNG, JPEG veya WebP. Dosya tarayıcınız üzerinden API’ye iletilir.
+            PNG, JPEG veya WebP. En fazla {MAX_FILE_SIZE_MB} MB. Daha büyük
+            dosyalarda sunucu tarafı işlem başarısız olabilir.
           </span>
           {file && (
             <span className="mt-2 rounded-full bg-zinc-800 px-4 py-1 text-sm text-zinc-300 ring-1 ring-zinc-700">
